@@ -1,21 +1,21 @@
-CREATE DATABASE movies;
---\c movies
-CREATE TABLE movies(id INT, name_movie VARCHAR(100), release_year INT, director VARCHAR(50), PRIMARY KEY(id));
-CREATE TABLE actors(id INT, name_actor VARCHAR(50), FOREIGN KEY (id) REFERENCES movies(id));
---\copy movies FROM 'peliculas.csv' csv header;
---\copy actors FROM 'reparto.csv' csv;
+CREATE DATABASE peliculas;
+--\c peliculas
+CREATE TABLE pelicula(id INT, pelicula VARCHAR(100), estreno INT, director VARCHAR(50), PRIMARY KEY(id));
+CREATE TABLE reparto(id INT, actor VARCHAR(50), FOREIGN KEY (id) REFERENCES pelicula(id));
+--\copy pelicula FROM 'peliculas.csv' csv header;
+--\copy reparto FROM 'reparto.csv' csv;
 
-SELECT name_movie, release_year, director, name_actor FROM movies JOIN actors ON movies.id=actors.id WHERE movies.name_movie='Titanic';
+SELECT pelicula, estreno, director, actor FROM pelicula JOIN reparto ON pelicula.id=reparto.id WHERE pelicula.pelicula='Titanic';
 
-SELECT name_movie FROM movies JOIN actors ON movies.id=actors.id WHERE actors.name_actor='Harrison Ford';
+SELECT pelicula FROM pelicula JOIN reparto ON pelicula.id=reparto.id WHERE reparto.actor='Harrison Ford';
 
-SELECT director,count(*) FROM movies GROUP BY director ORDER BY count(*) DESC LIMIT 10; 
+SELECT director,count(*) AS numero_peliculas FROM pelicula GROUP BY director ORDER BY count(*) DESC LIMIT 10; 
 
-SELECT count (DISTINCT name_actor) FROM actors; 
-SELECT DISTINCT name_actor FROM actors;
+SELECT count(DISTINCT actor)  AS num_actores_distintos FROM reparto; 
+-- SELECT DISTINCT actor FROM reparto;
 
-SELECT name_movie, release_year FROM movies WHERE release_year >= 1990 AND release_year <= 1999 ORDER BY name_movie;
+SELECT pelicula, estreno FROM pelicula WHERE estreno >= 1990 AND estreno <= 1999 ORDER BY pelicula;
 
-SELECT name_actor, name_movie, release_year FROM movies JOIN actors ON movies.id=actors.id WHERE release_year=2001;
+SELECT actor, pelicula, estreno FROM pelicula JOIN reparto ON pelicula.id=reparto.id WHERE estreno=2001;
 
-SELECT name_actor, name_movie, release_year FROM movies JOIN actors ON movies.id=actors.id WHERE release_year=(SELECT MAX(release_year) FROM movies);
+SELECT actor FROM reparto WHERE id=(SELECT id FROM pelicula ORDER BY estreno DESC LIMIT 1);
